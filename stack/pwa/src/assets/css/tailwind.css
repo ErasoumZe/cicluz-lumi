@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --cicluz-bg: #f5f1eb;
+  --cicluz-bg-soft: #fcfaf7;
+  --cicluz-surface: rgba(255, 255, 255, 0.72);
+  --cicluz-surface-strong: rgba(255, 255, 255, 0.9);
+  --cicluz-sidebar: rgba(250, 248, 244, 0.88);
+  --cicluz-ink: #30313a;
+  --cicluz-muted: #7e786f;
+  --cicluz-muted-strong: #605b55;
+  --cicluz-line: rgba(48, 39, 30, 0.08);
+  --cicluz-line-strong: rgba(48, 39, 30, 0.14);
+  --cicluz-shadow: 0 30px 80px -48px rgba(49, 38, 28, 0.38);
+  --cicluz-shadow-soft: 0 18px 40px -32px rgba(49, 38, 28, 0.26);
+}
+
+html,
+body,
+#__nuxt {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--cicluz-ink);
+  font-family: Aptos, 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.94) 0%, transparent 34%),
+    radial-gradient(circle at 90% 18%, rgba(232, 239, 255, 0.42) 0%, transparent 28%),
+    linear-gradient(180deg, #fbf8f4 0%, var(--cicluz-bg) 52%, #f1ece5 100%);
+}
+
+::selection {
+  background: rgba(59, 130, 246, 0.14);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.cicluz-glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.68) 100%);
+  border: 1px solid var(--cicluz-line);
+  box-shadow: var(--cicluz-shadow);
+  backdrop-filter: blur(18px);
+}
+
+.cicluz-soft-panel {
+  background: var(--cicluz-surface-strong);
+  border: 1px solid var(--cicluz-line);
+  box-shadow: var(--cicluz-shadow-soft);
+}
+
+.font-display {
+  font-family: Aptos Display, Aptos, 'Segoe UI', sans-serif;
+}
