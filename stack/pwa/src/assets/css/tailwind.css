@@ -4,18 +4,22 @@
 
 :root {
   color-scheme: light;
-  --cicluz-bg: #f5f1eb;
-  --cicluz-bg-soft: #fcfaf7;
-  --cicluz-surface: rgba(255, 255, 255, 0.72);
-  --cicluz-surface-strong: rgba(255, 255, 255, 0.9);
-  --cicluz-sidebar: rgba(250, 248, 244, 0.88);
-  --cicluz-ink: #30313a;
-  --cicluz-muted: #7e786f;
-  --cicluz-muted-strong: #605b55;
-  --cicluz-line: rgba(48, 39, 30, 0.08);
-  --cicluz-line-strong: rgba(48, 39, 30, 0.14);
-  --cicluz-shadow: 0 30px 80px -48px rgba(49, 38, 28, 0.38);
-  --cicluz-shadow-soft: 0 18px 40px -32px rgba(49, 38, 28, 0.26);
+  --cicluz-bg: #f5f5f7;
+  --cicluz-bg-soft: #fbfbfd;
+  --cicluz-surface: rgba(255, 255, 255, 0.78);
+  --cicluz-surface-strong: rgba(255, 255, 255, 0.92);
+  --cicluz-sidebar: rgba(247, 247, 250, 0.92);
+  --cicluz-ink: #23232b;
+  --cicluz-muted: #7b7b87;
+  --cicluz-muted-strong: #595967;
+  --cicluz-line: rgba(35, 35, 43, 0.08);
+  --cicluz-line-strong: rgba(35, 35, 43, 0.14);
+  --cicluz-shadow: 0 34px 88px -52px rgba(26, 29, 45, 0.28);
+  --cicluz-shadow-soft: 0 22px 52px -36px rgba(26, 29, 45, 0.18);
+  --cicluz-primary: #6d3df2;
+  --cicluz-primary-hover: #5a2fe0;
+  --cicluz-primary-shadow: 0 24px 44px -30px rgba(109, 61, 242, 0.54);
+  --cicluz-divider-dark: rgba(24, 24, 29, 0.22);
 }
 
 html,
@@ -29,13 +33,14 @@ body {
   color: var(--cicluz-ink);
   font-family: Aptos, 'Segoe UI', sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.94) 0%, transparent 34%),
-    radial-gradient(circle at 90% 18%, rgba(232, 239, 255, 0.42) 0%, transparent 28%),
-    linear-gradient(180deg, #fbf8f4 0%, var(--cicluz-bg) 52%, #f1ece5 100%);
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.96) 0%, transparent 34%),
+    radial-gradient(circle at 88% 16%, rgba(209, 225, 255, 0.32) 0%, transparent 26%),
+    radial-gradient(circle at 18% 100%, rgba(217, 216, 255, 0.18) 0%, transparent 28%),
+    linear-gradient(180deg, #fcfcfe 0%, var(--cicluz-bg) 54%, #ececf1 100%);
 }
 
 ::selection {
-  background: rgba(59, 130, 246, 0.14);
+  background: rgba(109, 61, 242, 0.18);
 }
 
 img {
@@ -64,4 +69,101 @@ textarea {
 
 .font-display {
   font-family: Aptos Display, Aptos, 'Segoe UI', sans-serif;
+}
+
+.cicluz-divider-subtle {
+  background: linear-gradient(
+    90deg,
+    rgba(24, 24, 29, 0.02) 0%,
+    rgba(24, 24, 29, 0.2) 16%,
+    rgba(24, 24, 29, 0.34) 50%,
+    rgba(24, 24, 29, 0.2) 84%,
+    rgba(24, 24, 29, 0.02) 100%
+  );
+}
+
+.cicluz-spectrum-divider {
+  background: linear-gradient(
+    90deg,
+    #ff3b30 0%,
+    #ff7a21 16%,
+    #ffb800 32%,
+    #7bd22f 50%,
+    #1fc2c7 66%,
+    #2d7cff 82%,
+    #7b49ff 100%
+  );
+  box-shadow: 0 0 18px rgba(123, 73, 255, 0.14);
+}
+
+.cicluz-button-primary {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: linear-gradient(180deg, #7547ff 0%, var(--cicluz-primary) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    var(--cicluz-primary-shadow);
+  transition:
+    transform 180ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease,
+    filter 220ms ease;
+}
+
+.cicluz-button-primary::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(187, 163, 255, 0.72) 0%, rgba(143, 98, 255, 0.38) 38%, transparent 72%);
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 220ms ease;
+  z-index: -2;
+}
+
+.cicluz-button-primary::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, #7547ff 0%, var(--cicluz-primary) 100%);
+  z-index: -1;
+}
+
+.cicluz-button-primary > * {
+  position: relative;
+  z-index: 1;
+}
+
+.cicluz-button-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #7c52ff 0%, var(--cicluz-primary-hover) 100%);
+  filter: saturate(1.04) brightness(1.02);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 18px 34px -24px rgba(109, 61, 242, 0.48),
+    0 0 28px rgba(136, 102, 255, 0.36);
+}
+
+.cicluz-button-primary:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.cicluz-button-primary:disabled {
+  background: linear-gradient(180deg, #c9c9d1 0%, #b8b8c2 100%);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.cicluz-button-primary:disabled::before {
+  opacity: 0;
+}
+
+.cicluz-button-primary:disabled::after {
+  background: linear-gradient(180deg, #c9c9d1 0%, #b8b8c2 100%);
 }

@@ -85,7 +85,7 @@ onMounted(() => {
     :class="
       isInitialStage
         ? 'px-4 pb-12 sm:px-6 lg:px-10'
-        : 'sticky bottom-0 z-10 bg-gradient-to-t from-[var(--cicluz-bg)] via-[rgba(245,241,235,0.94)] to-transparent px-4 pb-6 pt-4 sm:px-6 lg:px-10'
+        : 'sticky bottom-0 z-10 bg-gradient-to-t from-[var(--cicluz-bg)] via-[rgba(247,247,250,0.94)] to-transparent px-4 pb-6 pt-4 sm:px-6 lg:px-10'
     "
   >
     <div class="mx-auto w-full" :class="isInitialStage ? 'max-w-[780px]' : 'max-w-[880px]'">
@@ -113,7 +113,7 @@ onMounted(() => {
           </p>
 
           <button
-            class="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--cicluz-ink)] pl-4 pr-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+            class="cicluz-button-primary inline-flex h-11 items-center gap-2 rounded-full pl-4 pr-3 text-sm font-semibold text-white"
             :disabled="isBusy || !draft.trim()"
             @click="submit"
           >

@@ -54,7 +54,7 @@ const isActiveConversation = (conversationId: string) => {
       </div>
 
       <button
-        class="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--cicluz-ink)] px-4 text-sm font-semibold text-white shadow-[var(--cicluz-shadow-soft)] transition hover:-translate-y-0.5 hover:bg-stone-800"
+        class="cicluz-button-primary mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold text-white"
         @click="createConversation"
       >
         <svg aria-hidden="true" class="h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -63,7 +63,9 @@ const isActiveConversation = (conversationId: string) => {
         <span>Nova conversa</span>
       </button>
 
-      <div class="mt-8 flex items-center justify-between px-1">
+      <div class="mt-6 h-px w-full cicluz-divider-subtle" />
+
+      <div class="mt-6 flex items-center justify-between px-1">
         <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--cicluz-muted)]">Hist&oacute;rico</p>
         <span class="text-xs text-[var(--cicluz-muted)]">{{ history.length }}</span>
       </div>

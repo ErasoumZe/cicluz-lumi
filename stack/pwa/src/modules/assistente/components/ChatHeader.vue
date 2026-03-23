@@ -17,7 +17,7 @@ const statusLabel = computed(() => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-20 border-b border-[var(--cicluz-line)] bg-[rgba(245,241,235,0.76)] backdrop-blur-xl">
+  <header class="sticky top-0 z-20 border-b border-[var(--cicluz-line)] bg-[rgba(247,247,250,0.82)] backdrop-blur-xl">
     <div class="mx-auto flex w-full max-w-[1040px] items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-10">
       <div class="flex min-w-0 items-center gap-4">
         <div class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white shadow-[var(--cicluz-shadow-soft)] ring-1 ring-[var(--cicluz-line)] sm:flex">
@@ -43,5 +43,7 @@ const statusLabel = computed(() => {
         <span>{{ statusLabel }}</span>
       </div>
     </div>
+
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] cicluz-spectrum-divider" />
   </header>
 </template>
