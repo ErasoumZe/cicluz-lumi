@@ -6,9 +6,6 @@ import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(scriptDir, '..')
-const stackRoot = resolve(projectRoot, '..')
-const apiRoot = resolve(stackRoot, 'api')
-const apiEntry = resolve(apiRoot, 'src', 'server.mjs')
 const rogueRoot = join(projectRoot, '127.0.0.1')
 const rawArgs = process.argv.slice(2)
 
@@ -64,8 +61,6 @@ const stopChildren = (signal = 'SIGTERM') => {
   }
 }
 
-const wait = (time) => new Promise((resolve) => setTimeout(resolve, time))
-
 const canBindToPort = (port, host = 'localhost') => {
   return new Promise((resolve) => {
     const probe = createServer()
@@ -80,51 +75,6 @@ const canBindToPort = (port, host = 'localhost') => {
 
     probe.listen(port, host)
   })
-}
-
-const waitForApi = async (baseUrl, attempts = 40) => {
-  for (let index = 0; index < attempts; index += 1) {
-    try {
-      const response = await fetch(`${baseUrl}/health`)
-
-      if (response.ok) {
-        return true
-      }
-    } catch {
-      // ignore and retry
-    }
-
-    await wait(150)
-  }
-
-  return false
-}
-
-const startApiServer = async () => {
-  if (!existsSync(apiEntry)) {
-    return null
-  }
-
-  const apiBaseUrl = process.env.NUXT_PUBLIC_ASSISTANT_API_BASE_URL || 'http://127.0.0.1:4000'
-  const apiChild = spawn(process.execPath, [apiEntry], {
-    cwd: apiRoot,
-    env: process.env,
-    stdio: 'inherit',
-  })
-
-  childProcesses.push(apiChild)
-
-  apiChild.on('error', (error) => {
-    console.error('[assistente-api]', error)
-  })
-
-  const ready = await waitForApi(apiBaseUrl)
-
-  if (!ready) {
-    console.warn(`[assistente-api] nao respondeu em tempo util em ${apiBaseUrl}. O frontend pode cair no fallback local.`)
-  }
-
-  return apiChild
 }
 
 const nuxtBin = resolve(projectRoot, 'node_modules', 'nuxt', 'bin', 'nuxt.mjs')
@@ -148,15 +98,9 @@ const main = async () => {
     }
   }
 
-  await startApiServer()
-
   const child = spawn(process.execPath, [nuxtBin, 'dev', ...forwardArgs], {
     cwd: projectRoot,
-    env: {
-      ...process.env,
-      NUXT_PUBLIC_ASSISTANT_API_BASE_URL:
-        process.env.NUXT_PUBLIC_ASSISTANT_API_BASE_URL || 'http://127.0.0.1:4000',
-    },
+    env: process.env,
     stdio: 'inherit',
   })
 

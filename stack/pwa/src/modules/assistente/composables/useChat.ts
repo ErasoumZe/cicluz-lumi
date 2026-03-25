@@ -7,29 +7,25 @@ export const useChat = () => {
     conversations,
     activeConversationId,
     activeConversation,
-    profileId,
-    profileMemory,
     loading,
     streaming,
     error,
-    introAnimationPrimed,
+    introFlowActive,
   } = storeToRefs(chatStore)
 
   return {
     conversations,
     activeConversationId,
     activeConversation,
-    profileId,
-    profileMemory,
     loading,
     streaming,
     error,
-    introAnimationPrimed,
+    introFlowActive,
     initialize: chatStore.initialize,
+    activateIntroFlow: chatStore.activateIntroFlow,
+    deactivateIntroFlow: chatStore.deactivateIntroFlow,
     createConversation: chatStore.createConversation,
     selectConversation: chatStore.selectConversation,
-    primeIntroAnimation: chatStore.primeIntroAnimation,
-    resetIntroAnimation: chatStore.resetIntroAnimation,
     sendMessage: chatStore.sendMessage,
   }
 }

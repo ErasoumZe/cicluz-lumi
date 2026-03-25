@@ -2,10 +2,10 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { useBranding } from '../composables/useBranding'
 import { useChat } from '../composables/useChat'
+import LumiFlowAnimation from './LumiFlowAnimation.vue'
 import ChatMessage from './ChatMessage.vue'
-import LumiFocusAnimation from './LumiFocusAnimation.vue'
 
-const { activeConversation, streaming, sendMessage, introAnimationPrimed } = useChat()
+const { activeConversation, streaming, sendMessage, introFlowActive } = useChat()
 const { logoSymbolUrl } = useBranding()
 const scrollContainer = ref<HTMLElement | null>(null)
 
@@ -37,18 +37,18 @@ const visibleMessages = computed(() => {
   return messages.filter((message) => message.id !== 'message-initial')
 })
 
-const hasCompletedAssistantResponse = computed(() => {
+const hasAssistantContent = computed(() => {
   return visibleMessages.value.some((message) => {
-    return message.role === 'assistant' && !message.streaming && message.content.trim().length > 0
+    return message.role === 'assistant' && message.content.trim().length > 0
   })
 })
 
-const showIntroAnimation = computed(() => {
-  return activeConversation.value !== null && introAnimationPrimed.value && !hasCompletedAssistantResponse.value
+const showFlowState = computed(() => {
+  return activeConversation.value !== null && introFlowActive.value && !hasAssistantContent.value
 })
 
 const showWelcomeState = computed(() => {
-  return activeConversation.value !== null && visibleMessages.value.length === 0 && !showIntroAnimation.value
+  return activeConversation.value !== null && visibleMessages.value.length === 0 && !showFlowState.value
 })
 
 const getPromptDotClass = (index: number) => {
@@ -130,11 +130,19 @@ watch(
     </div>
 
     <div
-      v-else-if="showIntroAnimation"
-      class="flex flex-1 items-center justify-center px-4 py-10 sm:px-6 lg:px-10"
+      v-else-if="showFlowState"
+      class="flex flex-1 items-center px-4 pt-12 sm:px-6 lg:px-10"
     >
-      <div class="mx-auto flex w-full max-w-[920px] flex-1 items-center justify-center">
-        <LumiFocusAnimation />
+      <div class="mx-auto flex w-full max-w-[920px] flex-1 flex-col items-center justify-center pb-8 text-center">
+        <LumiFlowAnimation />
+
+        <p class="mt-8 text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--cicluz-muted)]">
+          Lumi
+        </p>
+
+        <p class="mt-4 max-w-[520px] text-[15px] leading-7 text-[var(--cicluz-muted-strong)]">
+          Estou organizando o contexto e deixando o caminho pronto para responder com clareza.
+        </p>
       </div>
     </div>
 

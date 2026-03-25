@@ -2,10 +2,9 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useStreaming } from '../composables/useStreaming'
 import { chatService } from '../services/chatService'
-import type { ChatConversation, ChatMessage, ProfileMemory } from '../types/chat.types'
+import type { ChatConversation, ChatMessage } from '../types/chat.types'
 
 const DEFAULT_TITLE = 'Nova conversa'
-const DEFAULT_PROFILE_ID = 'default'
 
 const buildConversationTitle = (content: string) => {
   const normalized = content.replace(/\s+/g, ' ').trim()
@@ -31,20 +30,9 @@ const createAssistantPlaceholder = (): ChatMessage => ({
 export const useChatStore = defineStore('chat', () => {
   const conversations = ref<ChatConversation[]>([])
   const activeConversationId = ref<string | null>(null)
-  const profileId = ref(DEFAULT_PROFILE_ID)
-  const profileMemory = ref<ProfileMemory>({
-    profileId: DEFAULT_PROFILE_ID,
-    updatedAt: new Date().toISOString(),
-    pillars: {
-      EU: [],
-      SER: [],
-      TER: [],
-    },
-  })
   const loading = ref(false)
   const error = ref<string | null>(null)
-  const initialized = ref(false)
-  const introAnimationPrimed = ref(false)
+  const introFlowActive = ref(false)
   const streamingState = useStreaming()
 
   const activeConversation = computed(() => {
@@ -66,25 +54,16 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   const initialize = async () => {
-    if (initialized.value && conversations.value.length > 0) {
-      return
-    }
-
     loading.value = true
     error.value = null
 
     try {
-      const bootstrap = await chatService.fetchBootstrap(profileId.value)
-      profileId.value = bootstrap.profileId
-      profileMemory.value = bootstrap.profileMemory
+      const bootstrap = await chatService.fetchBootstrap()
       conversations.value = sortConversations(bootstrap.conversations)
       activeConversationId.value =
         bootstrap.activeConversationId || bootstrap.conversations[0]?.id || null
-      error.value =
-        bootstrap.serviceMode === 'fallback'
-          ? 'A API da Lumi nao esta conectada. Inicie stack/api para respostas terapeuticas, memoria e classificacao por pilar.'
-          : null
-      initialized.value = true
+      error.value = null
+      introFlowActive.value = false
     } catch {
       error.value = 'N\u00e3o foi poss\u00edvel iniciar a Lumi.'
     } finally {
@@ -92,16 +71,22 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  const activateIntroFlow = () => {
+    introFlowActive.value = true
+  }
+
+  const deactivateIntroFlow = () => {
+    introFlowActive.value = false
+  }
+
   const createConversation = async () => {
     try {
-      const conversation = await chatService.createConversation({
-        profileId: profileId.value,
-      })
+      const conversation = await chatService.createConversation()
 
       upsertConversation(conversation)
       activeConversationId.value = conversation.id
       error.value = null
-      introAnimationPrimed.value = false
+      introFlowActive.value = false
 
       return conversation
     } catch {
@@ -117,7 +102,7 @@ export const useChatStore = defineStore('chat', () => {
       upsertConversation(conversation)
       activeConversationId.value = conversation.id
       error.value = null
-      introAnimationPrimed.value = false
+      introFlowActive.value = false
 
       return conversation
     }
@@ -126,15 +111,7 @@ export const useChatStore = defineStore('chat', () => {
   const selectConversation = (conversationId: string) => {
     activeConversationId.value = conversationId
     error.value = null
-    introAnimationPrimed.value = false
-  }
-
-  const primeIntroAnimation = () => {
-    introAnimationPrimed.value = true
-  }
-
-  const resetIntroAnimation = () => {
-    introAnimationPrimed.value = false
+    introFlowActive.value = false
   }
 
   const sendMessage = async (rawContent: string) => {
@@ -147,25 +124,36 @@ export const useChatStore = defineStore('chat', () => {
     const conversation = activeConversation.value ?? await createConversation()
     const userMessage = createUserMessage(content)
     const assistantPlaceholder = createAssistantPlaceholder()
+    const isFirstExchange = conversation.messages.every((message) => message.id === 'message-initial')
     const shouldUpdateTitle =
       conversation.title === DEFAULT_TITLE ||
       conversation.messages.every((message) => message.role === 'assistant')
+
+    if (isFirstExchange) {
+      introFlowActive.value = true
+    }
 
     if (shouldUpdateTitle) {
       conversation.title = buildConversationTitle(content)
     }
 
     conversation.messages.push(userMessage, assistantPlaceholder)
+    conversation.updatedAt = userMessage.createdAt
     loading.value = true
     error.value = null
     streamingState.start()
 
     try {
+      let introFlowReleased = false
       const response = await chatService.streamMessage({
         conversationId: conversation.id,
         content,
-        profileId: profileId.value,
         onChunk: (chunk) => {
+          if (isFirstExchange && !introFlowReleased && chunk.trim()) {
+            introFlowReleased = true
+            introFlowActive.value = false
+          }
+
           streamingState.append(chunk)
           assistantPlaceholder.content = streamingState.content.value
         },
@@ -179,12 +167,13 @@ export const useChatStore = defineStore('chat', () => {
         assistantPlaceholder.createdAt = response.message.createdAt
         assistantPlaceholder.content = response.message.content
         assistantPlaceholder.streaming = false
+        conversation.updatedAt = response.message.createdAt
         upsertConversation(conversation)
       }
 
-      const bootstrap = await chatService.fetchBootstrap(profileId.value)
-      profileMemory.value = bootstrap.profileMemory
-      initialized.value = true
+      if (isFirstExchange) {
+        introFlowActive.value = false
+      }
     } catch (caughtError) {
       const message =
         caughtError instanceof Error && caughtError.message
@@ -193,11 +182,12 @@ export const useChatStore = defineStore('chat', () => {
 
       assistantPlaceholder.content = message
       assistantPlaceholder.streaming = false
+      conversation.updatedAt = new Date().toISOString()
       error.value = message
+      introFlowActive.value = false
       upsertConversation(conversation)
     } finally {
       loading.value = false
-      introAnimationPrimed.value = false
       streamingState.finish()
       streamingState.reset()
     }
@@ -207,17 +197,15 @@ export const useChatStore = defineStore('chat', () => {
     conversations,
     activeConversationId,
     activeConversation,
-    profileId,
-    profileMemory,
     loading,
     streaming,
     error,
-    introAnimationPrimed,
+    introFlowActive,
     initialize,
+    activateIntroFlow,
+    deactivateIntroFlow,
     createConversation,
     selectConversation,
-    primeIntroAnimation,
-    resetIntroAnimation,
     sendMessage,
   }
 })

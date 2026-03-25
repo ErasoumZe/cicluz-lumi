@@ -2,7 +2,6 @@ export type ChatRole = 'user' | 'assistant'
 export type CicluzPillar = 'EU' | 'SER' | 'TER' | 'MISTO'
 export type ConversationMode = 'therapeutic' | 'planning' | 'hybrid'
 export type SafetyRiskLevel = 'none' | 'attention' | 'crisis'
-export type ChatServiceMode = 'api' | 'fallback'
 
 export interface ChatAnalysis {
   dominantPillar: CicluzPillar
@@ -40,43 +39,20 @@ export interface ChatConversation {
   title: string
   createdAt: string
   updatedAt?: string
-  profileId?: string
   messages: ChatMessage[]
   summary?: ConversationSummary
 }
 
-export interface ProfileMemoryEntry {
-  id: string
-  pillar: Exclude<CicluzPillar, 'MISTO'>
-  summary: string
-  tags: string[]
-  emotionalTone: string
-  createdAt: string
-  occurrences: number
-}
-
-export interface ProfileMemory {
-  profileId: string
-  updatedAt: string
-  pillars: Record<'EU' | 'SER' | 'TER', ProfileMemoryEntry[]>
-}
-
 export interface ChatBootstrapResponse {
-  profileId: string
   activeConversationId: string | null
   conversations: ChatConversation[]
-  profileMemory: ProfileMemory
-  serviceMode: ChatServiceMode
 }
 
-export interface CreateConversationPayload {
-  profileId?: string
-}
+export interface CreateConversationPayload {}
 
 export interface SendMessagePayload {
   conversationId: string
   content: string
-  profileId?: string
 }
 
 export interface StreamMessageOptions extends SendMessagePayload {

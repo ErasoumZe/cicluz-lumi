@@ -2,7 +2,15 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useChat } from '../composables/useChat'
 
-const { activeConversation, sendMessage, loading, streaming, error, introAnimationPrimed, primeIntroAnimation } = useChat()
+const {
+  activeConversation,
+  sendMessage,
+  loading,
+  streaming,
+  error,
+  activateIntroFlow,
+  deactivateIntroFlow,
+} = useChat()
 const draft = ref('')
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
@@ -11,30 +19,16 @@ const visibleMessages = computed(() => {
   return messages.filter((message) => message.id !== 'message-initial')
 })
 
-const hasCompletedAssistantResponse = computed(() => {
-  return visibleMessages.value.some((message) => {
-    return message.role === 'assistant' && !message.streaming && message.content.trim().length > 0
-  })
-})
-
 const isBusy = computed(() => loading.value || streaming.value)
-const isIntroAnimationActive = computed(() => {
-  return introAnimationPrimed.value && !hasCompletedAssistantResponse.value
-})
-
 const isWelcomeState = computed(() => {
   return activeConversation.value !== null && visibleMessages.value.length === 0
 })
 
 const isInitialStage = computed(() => {
-  return isWelcomeState.value || isIntroAnimationActive.value
+  return isWelcomeState.value
 })
 
 const helperText = computed(() => {
-  if (isIntroAnimationActive.value && isBusy.value) {
-    return 'A Lumi est\u00e1 preparando a primeira resposta.'
-  }
-
   return isInitialStage.value
     ? 'Pe\u00e7a para planejar o dia, criar tarefas ou resumir compromissos.'
     : 'Shift + Enter para nova linha'
@@ -70,8 +64,14 @@ const onKeydown = (event: KeyboardEvent) => {
 }
 
 const onFocus = () => {
-  if (!hasCompletedAssistantResponse.value) {
-    primeIntroAnimation()
+  if (isWelcomeState.value) {
+    activateIntroFlow()
+  }
+}
+
+const onBlur = () => {
+  if (isWelcomeState.value && !isBusy.value) {
+    deactivateIntroFlow()
   }
 }
 
@@ -101,9 +101,10 @@ onMounted(() => {
             rows="1"
             placeholder="Converse com a Lumi..."
             class="min-h-[60px] w-full resize-none bg-transparent text-[15px] leading-7 text-[var(--cicluz-ink)] outline-none placeholder:text-[var(--cicluz-muted)]"
-            @focus="onFocus"
             @input="resizeTextarea"
             @keydown="onKeydown"
+            @focus="onFocus"
+            @blur="onBlur"
           />
         </div>
 
