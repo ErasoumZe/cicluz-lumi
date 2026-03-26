@@ -2,6 +2,33 @@ export type ChatRole = 'user' | 'assistant'
 export type CicluzPillar = 'EU' | 'SER' | 'TER' | 'MISTO'
 export type ConversationMode = 'therapeutic' | 'planning' | 'hybrid'
 export type SafetyRiskLevel = 'none' | 'attention' | 'crisis'
+export type ChatAttachmentKind = 'image' | 'file' | 'audio'
+export type ChatAttachmentSource = 'upload' | 'recording' | 'generated'
+export type AssistenteView = 'chat' | 'gallery'
+
+export interface ChatAttachment {
+  id: string
+  kind: ChatAttachmentKind
+  source: ChatAttachmentSource
+  name: string
+  mimeType: string
+  size: number
+  url: string
+  createdAt: string
+  description?: string
+  durationMs?: number | null
+  transcript?: string
+}
+
+export interface GalleryItem {
+  id: string
+  name: string
+  url: string
+  createdAt: string
+  prompt?: string
+  sourceConversationId?: string | null
+  sourceMessageId?: string | null
+}
 
 export interface ChatAnalysis {
   dominantPillar: CicluzPillar
@@ -25,6 +52,7 @@ export interface ChatMessage {
   createdAt: string
   streaming: boolean
   metadata?: ChatMessageMetadata
+  attachments?: ChatAttachment[]
 }
 
 export interface ConversationSummary {
@@ -48,6 +76,15 @@ export interface ChatBootstrapResponse {
   conversations: ChatConversation[]
 }
 
+export interface AssistentePersistenceState {
+  conversations: ChatConversation[]
+  activeConversationId: string | null
+  galleryItems: GalleryItem[]
+  recentFiles: ChatAttachment[]
+  sidebarCollapsed: boolean
+  activeView: AssistenteView
+}
+
 export interface CreateConversationPayload {}
 
 export interface SendMessagePayload {
@@ -57,6 +94,7 @@ export interface SendMessagePayload {
 
 export interface StreamMessageOptions extends SendMessagePayload {
   messages?: ChatMessage[]
+  attachments?: ChatAttachment[]
   signal?: AbortSignal
   onChunk?: (chunk: string) => void
 }

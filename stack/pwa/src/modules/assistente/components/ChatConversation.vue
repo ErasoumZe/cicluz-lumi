@@ -11,24 +11,24 @@ const scrollContainer = ref<HTMLElement | null>(null)
 
 const starterPrompts = [
   {
-    title: 'Planejar o meu dia',
-    caption: 'Blocos de foco, agenda e prioridades.',
-    prompt: 'Planeje meu dia em blocos simples.',
+    title: 'Quero me compreender melhor',
+    caption: 'Autoconhecimento para entender o que estou vivendo agora.',
+    prompt: 'Quero me compreender melhor. Pode me conduzir com perguntas?',
   },
   {
-    title: 'Virar ideia em tarefa',
-    caption: 'Transforme contexto em a\u00e7\u00f5es claras.',
-    prompt: 'Transforme esta ideia em tarefas claras.',
+    title: 'Falar sobre o que eu sinto',
+    caption: 'Abra espa\u00e7o para acolher emo\u00e7\u00f5es, conflitos e buscas internas.',
+    prompt: 'Quero falar sobre o que estou sentindo agora.',
   },
   {
-    title: 'Ler a minha agenda',
-    caption: 'Resuma compromissos e pr\u00f3ximos passos.',
-    prompt: 'Resuma o que preciso fazer hoje.',
+    title: 'Explorar Eu, Ser e Ter',
+    caption: 'Olhe para os pilares da metodologia Cicluz dentro da minha fase atual.',
+    prompt: 'Quero explorar os pilares Eu, Ser e Ter na minha vida neste momento.',
   },
   {
-    title: 'Montar um plano r\u00e1pido',
-    caption: 'Estruture uma lista objetiva para executar.',
-    prompt: 'Monte um plano simples com os pr\u00f3ximos passos.',
+    title: 'Transformar reflex\u00e3o em passo',
+    caption: 'Leve a conversa para uma a\u00e7\u00e3o poss\u00edvel, com consci\u00eancia e dire\u00e7\u00e3o.',
+    prompt: 'Me ajude a transformar essa reflex\u00e3o em um pr\u00f3ximo passo consciente.',
   },
 ]
 
@@ -83,65 +83,56 @@ watch(
   <div class="flex min-h-0 flex-1 flex-col">
     <div
       v-if="showWelcomeState"
-      class="flex flex-1 items-center px-4 pt-12 sm:px-6 lg:px-10"
+      class="flex flex-1 items-center px-4 pt-10 sm:px-6 md:px-8 lg:px-10"
     >
-      <div class="mx-auto flex w-full max-w-[920px] flex-1 flex-col items-center justify-center pb-8 text-center">
-        <div class="inline-flex items-center gap-3 rounded-full border border-[var(--cicluz-line)] bg-white/76 px-4 py-2 shadow-[var(--cicluz-shadow-soft)] backdrop-blur">
-          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--cicluz-bg-soft)] ring-1 ring-[var(--cicluz-line)]">
-            <img
-              alt="Cicluz"
-              :src="logoSymbolUrl"
-              class="h-6 w-6 object-contain"
-            />
-          </div>
-
-          <div class="text-left">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--cicluz-muted)]">Lumi</p>
-            <p class="text-sm font-semibold text-[var(--cicluz-ink)]">Assistente da Cicluz</p>
-          </div>
+      <div class="mx-auto flex w-full max-w-[980px] flex-1 flex-col items-center justify-center pb-10 text-center sm:pb-12">
+        <div class="flex h-14 w-14 items-center justify-center rounded-[22px] bg-white/84 shadow-[var(--cicluz-shadow-soft)] ring-1 ring-[var(--cicluz-line)]">
+          <img
+            alt="Cicluz"
+            :src="logoSymbolUrl"
+            class="h-8 w-8 object-contain"
+          />
         </div>
 
-        <h2 class="font-display mt-8 max-w-[760px] text-[clamp(3rem,7vw,5.2rem)] font-semibold leading-[1.02] tracking-[-0.05em] text-[var(--cicluz-ink)]">
-          O que vamos organizar hoje?
+        <h2 class="font-display mt-8 max-w-[820px] text-[clamp(2.45rem,9vw,4.9rem)] font-semibold leading-[1.04] tracking-[-0.055em] text-[var(--cicluz-ink)] sm:text-[clamp(2.9rem,6vw,4.9rem)]">
+          Clareza para olhar para si com mais presen&ccedil;a.
         </h2>
 
-        <p class="mt-5 max-w-[620px] text-[17px] leading-8 text-[var(--cicluz-muted-strong)]">
-          Converse com a Lumi para estruturar o dia, transformar ideias em tarefas e navegar com clareza pela Agenda Inteligente.
+        <p class="mt-5 max-w-[760px] text-[15px] leading-7 text-[var(--cicluz-muted-strong)] sm:text-[17px] sm:leading-8">
+          A LUMI &eacute; a sua assistente virtual e parceira. Ela conversa com voc&ecirc; sobre autoconhecimento, clareza emocional e dire&ccedil;&atilde;o de vida com base na metodologia Cicluz e seus tr&ecirc;s pilares: Eu, Ser e Ter.
         </p>
 
-        <div class="mt-10 flex max-w-[820px] flex-wrap justify-center gap-3">
-          <button
-            v-for="(prompt, index) in starterPrompts"
-            :key="prompt.prompt"
-            class="group inline-flex max-w-full items-center gap-3 rounded-full border border-[var(--cicluz-line-strong)] bg-white/82 px-4 py-3 text-left shadow-[var(--cicluz-shadow-soft)] transition hover:-translate-y-0.5 hover:bg-white"
-            @click="sendMessage(prompt.prompt)"
-          >
-            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--cicluz-bg-soft)] ring-1 ring-[var(--cicluz-line)]">
-              <span class="h-2.5 w-2.5 rounded-full" :class="getPromptDotClass(index)" />
-            </span>
+        <div class="mt-10 w-full max-w-[860px]">
+          <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-2 md:overflow-visible md:pb-0">
+            <button
+              v-for="(prompt, index) in starterPrompts"
+              :key="prompt.prompt"
+              class="group flex min-h-[112px] min-w-[280px] snap-start items-start gap-4 rounded-[28px] border border-[var(--cicluz-line-strong)] bg-white/84 px-5 py-4 text-left shadow-[var(--cicluz-shadow-soft)] transition hover:-translate-y-0.5 hover:bg-white md:min-w-0"
+              @click="sendMessage(prompt.prompt)"
+            >
+              <span class="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--cicluz-bg-soft)] ring-1 ring-[var(--cicluz-line)]">
+                <span class="h-2.5 w-2.5 rounded-full" :class="getPromptDotClass(index)" />
+              </span>
 
-            <span class="min-w-0">
-              <span class="block text-sm font-semibold text-[var(--cicluz-ink)]">{{ prompt.title }}</span>
-              <span class="mt-0.5 block text-xs leading-5 text-[var(--cicluz-muted)]">{{ prompt.caption }}</span>
-            </span>
-          </button>
+              <span class="min-w-0 pt-0.5">
+                <span class="block text-[15px] font-semibold leading-6 text-[var(--cicluz-ink)]">{{ prompt.title }}</span>
+                <span class="mt-1.5 block text-[13px] leading-6 text-[var(--cicluz-muted)]">{{ prompt.caption }}</span>
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
     <div
       v-else-if="showFlowState"
-      class="flex flex-1 items-center px-4 pt-12 sm:px-6 lg:px-10"
+      class="flex flex-1 items-center px-4 pt-10 sm:px-6 md:px-8 lg:px-10"
     >
-      <div class="mx-auto flex w-full max-w-[920px] flex-1 flex-col items-center justify-center pb-8 text-center">
-        <LumiFlowAnimation />
+      <div class="mx-auto flex w-full max-w-[920px] flex-1 flex-col items-center justify-center pb-10 text-center sm:pb-12">
+        <LumiFlowAnimation :size="340" />
 
-        <p class="mt-8 text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--cicluz-muted)]">
-          Lumi
-        </p>
-
-        <p class="mt-4 max-w-[520px] text-[15px] leading-7 text-[var(--cicluz-muted-strong)]">
-          Estou organizando o contexto e deixando o caminho pronto para responder com clareza.
+        <p class="mt-4 max-w-[520px] text-[14px] leading-7 text-[var(--cicluz-muted-strong)] sm:text-[15px]">
+          Estou reunindo o seu contexto para responder com escuta, profundidade e clareza.
         </p>
       </div>
     </div>

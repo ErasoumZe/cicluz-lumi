@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useId } from 'vue'
 import logoSymbolUrl from '~/assets/logo_novo_sem_escrito-removebg-preview.png'
-import officialSvgRaw from '../../../../public/path.svg?raw'
+import officialSvgRaw from '../../../public/path.svg?raw'
 
 const props = withDefaults(defineProps<{
   duration?: number
@@ -43,6 +43,7 @@ const ids = {
   headMask: `lumi-flow-head-mask-${uid}`,
   coreTone: `lumi-flow-core-tone-${uid}`,
   inkField: `lumi-flow-ink-field-${uid}`,
+  headBloom: `lumi-flow-head-bloom-${uid}`,
   headGlow: `lumi-flow-head-glow-${uid}`,
   headAura: `lumi-flow-head-aura-${uid}`,
 }
@@ -55,7 +56,7 @@ const glow = computed(() => clamp(props.glowIntensity, 0, 1.4))
 const speed = computed(() => Math.max(props.speed, 0.2))
 const durationValue = computed(() => props.duration / speed.value)
 
-const headLength = computed(() => 84 + glow.value * 36)
+const headLength = computed(() => 128 + glow.value * 48)
 const headGap = computed(() => normalizedPathLength - headLength.value)
 const headDasharray = computed(() => {
   return `${formatNumber(headLength.value)} ${formatNumber(headGap.value)}`
@@ -68,11 +69,13 @@ const headStrokeWidth = computed(() => formatNumber(210 + glow.value * 78))
 const inkOpacity = computed(() => formatNumber(0.68 + glow.value * 0.14))
 const coreSaturation = computed(() => formatNumber(1.85 + glow.value * 0.55))
 const coreSlope = computed(() => 1.02 + glow.value * 0.05)
-const headGlowBlur = computed(() => formatNumber(22 + glow.value * 12))
-const headAuraBlur = computed(() => formatNumber(62 + glow.value * 24))
+const headBloomBlur = computed(() => formatNumber(108 + glow.value * 42))
+const headGlowBlur = computed(() => formatNumber(34 + glow.value * 16))
+const headAuraBlur = computed(() => formatNumber(82 + glow.value * 28))
 const headCoreOpacity = computed(() => formatNumber(clamp(0.9 + glow.value * 0.08, 0, 1)))
 const headGlowOpacity = computed(() => formatNumber(clamp(0.96 + glow.value * 0.18, 0, 1)))
 const headAuraOpacity = computed(() => formatNumber(clamp(0.86 + glow.value * 0.24, 0, 1)))
+const headBloomOpacity = computed(() => formatNumber(clamp(0.38 + glow.value * 0.18, 0, 0.72)))
 const toIntercept = (slope: number) => formatNumber(0.5 - slope / 2)
 const durationText = computed(() => `${durationValue.value.toFixed(2)}s`)
 
@@ -144,7 +147,17 @@ const rootStyle = computed(() => ({
           </feComponentTransfer>
         </filter>
 
-        <filter :id="ids.headGlow" x="-70%" y="-70%" width="240%" height="240%">
+        <filter :id="ids.headBloom" x="-170%" y="-170%" width="440%" height="440%">
+          <feColorMatrix in="SourceGraphic" type="saturate" values="3.2" result="head-bloom-tone" />
+          <feComponentTransfer in="head-bloom-tone" result="head-bloom-contrast">
+            <feFuncR type="linear" slope="1.22" intercept="-0.04" />
+            <feFuncG type="linear" slope="1.22" intercept="-0.04" />
+            <feFuncB type="linear" slope="1.22" intercept="-0.04" />
+          </feComponentTransfer>
+          <feGaussianBlur in="head-bloom-contrast" :stdDeviation="headBloomBlur" />
+        </filter>
+
+        <filter :id="ids.headGlow" x="-95%" y="-95%" width="290%" height="290%">
           <feColorMatrix in="SourceGraphic" type="saturate" values="2.35" result="head-glow-tone" />
           <feComponentTransfer in="head-glow-tone" result="head-glow-contrast">
             <feFuncR type="linear" slope="1.26" intercept="-0.1" />
@@ -154,7 +167,7 @@ const rootStyle = computed(() => ({
           <feGaussianBlur in="head-glow-contrast" :stdDeviation="headGlowBlur" />
         </filter>
 
-        <filter :id="ids.headAura" x="-120%" y="-120%" width="340%" height="340%">
+        <filter :id="ids.headAura" x="-160%" y="-160%" width="420%" height="420%">
           <feColorMatrix in="SourceGraphic" type="saturate" values="2.7" result="head-aura-tone" />
           <feComponentTransfer in="head-aura-tone" result="head-aura-contrast">
             <feFuncR type="linear" slope="1.18" intercept="-0.05" />
@@ -175,6 +188,12 @@ const rootStyle = computed(() => ({
           <ellipse cx="122" cy="300" rx="112" ry="116" fill="#D93468" />
         </g>
       </defs>
+
+      <g class="lumi-flow__head-bloom" :filter="`url(#${ids.headBloom})`" :opacity="headBloomOpacity">
+        <g :mask="`url(#${ids.headMask})`">
+          <use :href="`#${ids.inkField}`" />
+        </g>
+      </g>
 
       <g class="lumi-flow__head-aura" :filter="`url(#${ids.headAura})`" :opacity="headAuraOpacity">
         <g :mask="`url(#${ids.headMask})`">
@@ -227,12 +246,14 @@ const rootStyle = computed(() => ({
   pointer-events: none;
 }
 
+.lumi-flow__head-bloom,
 .lumi-flow__head-aura,
 .lumi-flow__head-glow,
 .lumi-flow__head-core {
   isolation: isolate;
 }
 
+.lumi-flow__head-bloom,
 .lumi-flow__head-aura {
   mix-blend-mode: normal;
 }

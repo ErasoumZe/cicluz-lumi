@@ -12,6 +12,29 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Cicluz Assistente',
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500&display=swap',
+        },
+        {
+          rel: 'icon',
+          type: 'image/png',
+          href: '/apple-touch-icon.png?v=20260326c',
+        },
+        {
+          rel: 'shortcut icon',
+          type: 'image/x-icon',
+          href: '/favicon.ico?v=20260326c',
+        },
+        {
+          rel: 'apple-touch-icon',
+          sizes: '180x180',
+          href: '/apple-touch-icon.png?v=20260326c',
+        },
+      ],
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         {
