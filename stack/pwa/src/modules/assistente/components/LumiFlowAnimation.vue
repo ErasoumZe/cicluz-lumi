@@ -40,9 +40,11 @@ const formatNumber = (value: number) => value.toFixed(2)
 const officialFullPath = extractOfficialPath(officialSvgRaw)
 
 const ids = {
-  trailMask: `lumi-flow-trail-mask-${uid}`,
-  glow: `lumi-flow-glow-${uid}`,
-  aura: `lumi-flow-aura-${uid}`,
+  headMask: `lumi-flow-head-mask-${uid}`,
+  coreTone: `lumi-flow-core-tone-${uid}`,
+  inkField: `lumi-flow-ink-field-${uid}`,
+  headGlow: `lumi-flow-head-glow-${uid}`,
+  headAura: `lumi-flow-head-aura-${uid}`,
 }
 
 const sizeValue = computed(() => {
@@ -53,21 +55,25 @@ const glow = computed(() => clamp(props.glowIntensity, 0, 1.4))
 const speed = computed(() => Math.max(props.speed, 0.2))
 const durationValue = computed(() => props.duration / speed.value)
 
-const trailStrokeWidth = computed(() => formatNumber(152 + glow.value * 42))
-const trailLength = computed(() => 192 + glow.value * 86)
-const trailGap = computed(() => normalizedPathLength + 420)
-const trailDasharray = computed(() => {
-  return `${formatNumber(trailLength.value)} ${formatNumber(trailGap.value)}`
+const headLength = computed(() => 84 + glow.value * 36)
+const headGap = computed(() => normalizedPathLength - headLength.value)
+const headDasharray = computed(() => {
+  return `${formatNumber(headLength.value)} ${formatNumber(headGap.value)}`
 })
-const trailTravel = computed(() => {
-  return formatNumber(trailLength.value + trailGap.value)
-})
+const trailTravel = formatNumber(normalizedPathLength)
+const headFrom = computed(() => formatNumber(-headLength.value))
+const headTo = computed(() => formatNumber(-(normalizedPathLength + headLength.value)))
+const headStrokeWidth = computed(() => formatNumber(210 + glow.value * 78))
 
-const coreOpacity = computed(() => formatNumber(0.72 + glow.value * 0.18))
-const glowOpacity = computed(() => formatNumber(0.52 + glow.value * 0.18))
-const auraOpacity = computed(() => formatNumber(0.26 + glow.value * 0.18))
-const glowBlur = computed(() => formatNumber(4.6 + glow.value * 3.6))
-const auraBlur = computed(() => formatNumber(12 + glow.value * 8.5))
+const inkOpacity = computed(() => formatNumber(0.68 + glow.value * 0.14))
+const coreSaturation = computed(() => formatNumber(1.85 + glow.value * 0.55))
+const coreSlope = computed(() => 1.02 + glow.value * 0.05)
+const headGlowBlur = computed(() => formatNumber(22 + glow.value * 12))
+const headAuraBlur = computed(() => formatNumber(62 + glow.value * 24))
+const headCoreOpacity = computed(() => formatNumber(clamp(0.9 + glow.value * 0.08, 0, 1)))
+const headGlowOpacity = computed(() => formatNumber(clamp(0.96 + glow.value * 0.18, 0, 1)))
+const headAuraOpacity = computed(() => formatNumber(clamp(0.86 + glow.value * 0.24, 0, 1)))
+const toIntercept = (slope: number) => formatNumber(0.5 - slope / 2)
 const durationText = computed(() => `${durationValue.value.toFixed(2)}s`)
 
 const rootStyle = computed(() => ({
@@ -97,7 +103,7 @@ const rootStyle = computed(() => ({
     >
       <defs>
         <mask
-          :id="ids.trailMask"
+          :id="ids.headMask"
           x="0"
           y="0"
           width="510"
@@ -110,67 +116,79 @@ const rootStyle = computed(() => ({
             :transform="transform"
             fill="none"
             stroke="#ffffff"
-            :stroke-width="trailStrokeWidth"
+            :stroke-width="headStrokeWidth"
             stroke-linecap="round"
             stroke-linejoin="round"
             :pathLength="normalizedPathLength"
-            :stroke-dasharray="trailDasharray"
-            stroke-dashoffset="0"
+            :stroke-dasharray="headDasharray"
+            :stroke-dashoffset="headFrom"
           >
-            <animate
-              attributeName="stroke-dashoffset"
-              calcMode="linear"
-              dur="0s"
-              begin="indefinite"
-              fill="freeze"
-            />
             <animate
               attributeName="stroke-dashoffset"
               calcMode="linear"
               begin="0s"
               :dur="durationText"
-              :values="`0; -${trailTravel}`"
+              :values="`${headFrom}; ${headTo}`"
+              keyTimes="0;1"
               repeatCount="indefinite"
             />
           </path>
         </mask>
 
-        <filter :id="ids.glow" x="-24%" y="-24%" width="148%" height="148%">
-          <feGaussianBlur in="SourceGraphic" :stdDeviation="glowBlur" />
+        <filter :id="ids.coreTone" x="-10%" y="-10%" width="120%" height="120%">
+          <feColorMatrix in="SourceGraphic" type="saturate" :values="coreSaturation" result="core-tone" />
+          <feComponentTransfer in="core-tone">
+            <feFuncR type="linear" :slope="coreSlope" :intercept="toIntercept(coreSlope)" />
+            <feFuncG type="linear" :slope="coreSlope" :intercept="toIntercept(coreSlope)" />
+            <feFuncB type="linear" :slope="coreSlope" :intercept="toIntercept(coreSlope)" />
+          </feComponentTransfer>
         </filter>
 
-        <filter :id="ids.aura" x="-36%" y="-36%" width="172%" height="172%">
-          <feGaussianBlur in="SourceGraphic" :stdDeviation="auraBlur" />
+        <filter :id="ids.headGlow" x="-70%" y="-70%" width="240%" height="240%">
+          <feColorMatrix in="SourceGraphic" type="saturate" values="2.35" result="head-glow-tone" />
+          <feComponentTransfer in="head-glow-tone" result="head-glow-contrast">
+            <feFuncR type="linear" slope="1.26" intercept="-0.1" />
+            <feFuncG type="linear" slope="1.26" intercept="-0.1" />
+            <feFuncB type="linear" slope="1.26" intercept="-0.1" />
+          </feComponentTransfer>
+          <feGaussianBlur in="head-glow-contrast" :stdDeviation="headGlowBlur" />
         </filter>
+
+        <filter :id="ids.headAura" x="-120%" y="-120%" width="340%" height="340%">
+          <feColorMatrix in="SourceGraphic" type="saturate" values="2.7" result="head-aura-tone" />
+          <feComponentTransfer in="head-aura-tone" result="head-aura-contrast">
+            <feFuncR type="linear" slope="1.18" intercept="-0.05" />
+            <feFuncG type="linear" slope="1.18" intercept="-0.05" />
+            <feFuncB type="linear" slope="1.18" intercept="-0.05" />
+          </feComponentTransfer>
+          <feGaussianBlur in="head-aura-contrast" :stdDeviation="headAuraBlur" />
+        </filter>
+
+        <g :id="ids.inkField">
+          <ellipse cx="102" cy="196" rx="112" ry="132" fill="#7A5CFF" />
+          <ellipse cx="148" cy="126" rx="98" ry="84" fill="#2A9BFF" />
+          <ellipse cx="252" cy="84" rx="98" ry="82" fill="#2ED0C3" />
+          <ellipse cx="332" cy="120" rx="88" ry="76" fill="#6ED64A" />
+          <ellipse cx="408" cy="196" rx="108" ry="116" fill="#F4D12B" />
+          <ellipse cx="338" cy="308" rx="122" ry="108" fill="#F19A2F" />
+          <ellipse cx="238" cy="394" rx="132" ry="104" fill="#EF4328" />
+          <ellipse cx="122" cy="300" rx="112" ry="116" fill="#D93468" />
+        </g>
       </defs>
 
-      <g class="lumi-flow__aura" :filter="`url(#${ids.aura})`" :opacity="auraOpacity">
-        <g :mask="`url(#${ids.trailMask})`">
-          <image
-            :href="logoSymbolUrl"
-            x="0"
-            y="0"
-            width="510"
-            height="490"
-            preserveAspectRatio="xMidYMid meet"
-          />
+      <g class="lumi-flow__head-aura" :filter="`url(#${ids.headAura})`" :opacity="headAuraOpacity">
+        <g :mask="`url(#${ids.headMask})`">
+          <use :href="`#${ids.inkField}`" />
         </g>
       </g>
 
-      <g class="lumi-flow__glow" :filter="`url(#${ids.glow})`" :opacity="glowOpacity">
-        <g :mask="`url(#${ids.trailMask})`">
-          <image
-            :href="logoSymbolUrl"
-            x="0"
-            y="0"
-            width="510"
-            height="490"
-            preserveAspectRatio="xMidYMid meet"
-          />
+      <g class="lumi-flow__head-glow" :filter="`url(#${ids.headGlow})`" :opacity="headGlowOpacity">
+        <g :mask="`url(#${ids.headMask})`">
+          <use :href="`#${ids.inkField}`" />
         </g>
       </g>
 
-      <g class="lumi-flow__core" :mask="`url(#${ids.trailMask})`" :opacity="coreOpacity">
+      <g class="lumi-flow__head-core" :filter="`url(#${ids.coreTone})`" :mask="`url(#${ids.headMask})`" :opacity="headCoreOpacity">
         <image
           :href="logoSymbolUrl"
           x="0"
@@ -209,10 +227,21 @@ const rootStyle = computed(() => ({
   pointer-events: none;
 }
 
-.lumi-flow__aura,
-.lumi-flow__glow,
-.lumi-flow__core {
+.lumi-flow__head-aura,
+.lumi-flow__head-glow,
+.lumi-flow__head-core {
   isolation: isolate;
-  mix-blend-mode: screen;
+}
+
+.lumi-flow__head-aura {
+  mix-blend-mode: normal;
+}
+
+.lumi-flow__head-glow {
+  mix-blend-mode: normal;
+}
+
+.lumi-flow__head-core {
+  mix-blend-mode: normal;
 }
 </style>
