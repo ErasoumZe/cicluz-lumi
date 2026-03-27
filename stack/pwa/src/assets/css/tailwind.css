@@ -20,6 +20,16 @@
   --cicluz-primary-hover: #5a2fe0;
   --cicluz-primary-shadow: 0 24px 44px -30px rgba(109, 61, 242, 0.54);
   --cicluz-divider-dark: rgba(24, 24, 29, 0.22);
+  --cicluz-spectrum-gradient: linear-gradient(
+    90deg,
+    #ff4336 0%,
+    #ff7c22 16%,
+    #ffbf2f 32%,
+    #6ed64a 52%,
+    #22c3c8 70%,
+    #4f7dff 86%,
+    #7c52ff 100%
+  );
 }
 
 html,
@@ -83,17 +93,90 @@ textarea {
 }
 
 .cicluz-spectrum-divider {
-  background: linear-gradient(
-    90deg,
-    #ff3b30 0%,
-    #ff7a21 16%,
-    #ffb800 32%,
-    #7bd22f 50%,
-    #1fc2c7 66%,
-    #2d7cff 82%,
-    #7b49ff 100%
-  );
+  background: var(--cicluz-spectrum-gradient);
   box-shadow: 0 0 18px rgba(123, 73, 255, 0.14);
+}
+
+.cicluz-top-divider {
+  position: relative;
+  overflow: visible;
+  background: var(--cicluz-spectrum-gradient);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 0 10px rgba(123, 73, 255, 0.08);
+}
+
+.cicluz-top-divider::before,
+.cicluz-top-divider::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  left: 0;
+  top: 50%;
+  background: var(--cicluz-spectrum-gradient);
+  background-size: 100% 100%;
+  pointer-events: none;
+  transform: translateY(-50%);
+  will-change: -webkit-mask-position, mask-position;
+  animation: cicluz-divider-glow 8.4s linear infinite;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.cicluz-top-divider::before {
+  height: 22px;
+  opacity: 0.5;
+  filter: blur(12px) saturate(1.16) brightness(1.08);
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.88) 24%,
+    rgba(0, 0, 0, 0.38) 54%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.88) 24%,
+    rgba(0, 0, 0, 0.38) 54%,
+    transparent 78%
+  );
+  -webkit-mask-size: clamp(130px, 12vw, 180px) 100%;
+  mask-size: clamp(130px, 12vw, 180px) 100%;
+}
+
+.cicluz-top-divider::after {
+  height: 8px;
+  opacity: 0.95;
+  filter: blur(3px) saturate(1.18) brightness(1.16);
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.98) 0%,
+    rgba(0, 0, 0, 0.92) 32%,
+    rgba(0, 0, 0, 0.24) 60%,
+    transparent 76%
+  );
+  mask-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.98) 0%,
+    rgba(0, 0, 0, 0.92) 32%,
+    rgba(0, 0, 0, 0.24) 60%,
+    transparent 76%
+  );
+  -webkit-mask-size: clamp(90px, 9vw, 120px) 100%;
+  mask-size: clamp(90px, 9vw, 120px) 100%;
+}
+
+@keyframes cicluz-divider-glow {
+  from {
+    -webkit-mask-position: -14% 50%;
+    mask-position: -14% 50%;
+  }
+
+  to {
+    -webkit-mask-position: 114% 50%;
+    mask-position: 114% 50%;
+  }
 }
 
 .cicluz-button-primary {

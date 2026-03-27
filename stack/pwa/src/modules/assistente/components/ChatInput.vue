@@ -602,10 +602,23 @@ const onFocus = () => {
   }
 }
 
-const onBlur = () => {
-  if (isWelcomeState.value && !isBusy.value) {
-    deactivateIntroFlow()
+const onBlur = (event: FocusEvent) => {
+  if (!isWelcomeState.value || isBusy.value) {
+    return
   }
+
+  const nextTarget = event.relatedTarget
+  const hasPendingDraft = draft.value.trim().length > 0 || pendingAttachments.value.length > 0
+
+  if (hasPendingDraft) {
+    return
+  }
+
+  if (nextTarget instanceof Node && composerRef.value?.contains(nextTarget)) {
+    return
+  }
+
+  deactivateIntroFlow()
 }
 
 const handleDocumentClick = (event: MouseEvent) => {
@@ -837,6 +850,7 @@ onUnmounted(() => {
                   : 'bg-[linear-gradient(180deg,#d2d2db_0%,#bcbcc7_100%)] text-white shadow-none'
               "
               :disabled="!canSubmit"
+              @pointerdown.prevent
               @click="submit"
             >
               <span>Enviar</span>

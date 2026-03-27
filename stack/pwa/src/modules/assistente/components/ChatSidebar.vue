@@ -148,7 +148,7 @@ const openGalleryView = () => {
                 <span class="cicluz-wordmark__lu">Lu</span><span class="cicluz-wordmark__mi">m</span><span class="cicluz-wordmark__i">ı</span>
               </p>
               <p class="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.26em] text-[var(--cicluz-muted-strong)] sm:text-[11px]">
-                Metodologia Cicluz
+                Assistente Cicluz
               </p>
           </div>
 
@@ -160,7 +160,7 @@ const openGalleryView = () => {
               <span class="cicluz-wordmark__lu">Lu</span><span class="cicluz-wordmark__mi">mi</span>
             </p>
             <p class="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.26em] text-[var(--cicluz-muted-strong)] sm:text-[11px]">
-              Metodologia Cicluz
+              Assistente Cicluz
             </p>
           </div>
         </div>

@@ -16,7 +16,7 @@ await initialize()
 
 <template>
   <div class="relative min-h-screen overflow-hidden bg-[var(--cicluz-bg)] text-[var(--cicluz-ink)]">
-    <div class="absolute inset-x-0 top-0 z-30 h-[3px] bg-[linear-gradient(90deg,#ff4336_0%,#ff7c22_16%,#ffbf2f_32%,#6ed64a_52%,#22c3c8_70%,#4f7dff_86%,#7c52ff_100%)]" />
+    <div class="cicluz-top-divider absolute inset-x-0 top-0 z-30 h-[3px]" />
 
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <div class="absolute left-[-12%] top-[-10%] h-[26rem] w-[26rem] rounded-full bg-white/80 blur-3xl sm:h-[34rem] sm:w-[34rem]" />
